@@ -8,22 +8,18 @@
 #include <arpa/inet.h> 
 #include <unistd.h>
 #include <errno.h>
-#define PORT 5000
 #define BUF_SIZE 2000 
   
-int main(int argc, char**argv) 
+int main() 
 {  
 	struct sockaddr_in addr, cl_addr;  
 	int sockfd, ret;  
-	char buffer[BUF_SIZE];  
+	char buffer[BUF_SIZE];  //Declaring buffer
 	struct hostent * server;
 	char * serverAddr;
-	if (argc < 2) 
-	{
-		printf("usage: client < ip address >\n");
-		exit(1);  
-	}
-	serverAddr = argv[1];         
+	//Getiing server ip address
+	printf("Enter server ip address\n");
+	scanf("%c",serverAddr);         
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);  //Socket Creation
 	if (sockfd < 0) 
 	{  
@@ -34,7 +30,7 @@ int main(int argc, char**argv)
 	memset(&addr, 0, sizeof(addr));  
 	addr.sin_family = AF_INET;  
 	addr.sin_addr.s_addr = inet_addr(serverAddr);
-	addr.sin_port = PORT;     
+	addr.sin_port = htons(5000);     
 	ret = connect(sockfd, (struct sockaddr *) &addr, sizeof(addr));  //Connecting socket
 	if (ret < 0) 
 	{  
