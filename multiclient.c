@@ -8,7 +8,7 @@
 #include <arpa/inet.h> 
 #include <unistd.h>
 #include <errno.h>
-#define PORT 4444 
+#define PORT 5000
 #define BUF_SIZE 2000 
   
 int main(int argc, char**argv) 
