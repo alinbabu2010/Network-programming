@@ -24,7 +24,7 @@ int main(int argc, char**argv)
 		exit(1);  
 	}
 	serverAddr = argv[1];         
-	sockfd = socket(AF_INET, SOCK_STREAM, 0);  
+	sockfd = socket(AF_INET, SOCK_STREAM, 0);  //Socket Creation
 	if (sockfd < 0) 
 	{  
 		printf("Error creating socket!\n");  
@@ -35,7 +35,7 @@ int main(int argc, char**argv)
 	addr.sin_family = AF_INET;  
 	addr.sin_addr.s_addr = inet_addr(serverAddr);
 	addr.sin_port = PORT;     
-	ret = connect(sockfd, (struct sockaddr *) &addr, sizeof(addr));  
+	ret = connect(sockfd, (struct sockaddr *) &addr, sizeof(addr));  //Connecting socket
 	if (ret < 0) 
 	{  
 		printf("Error connecting to the server!\n");  
@@ -46,12 +46,12 @@ int main(int argc, char**argv)
 	printf("Enter your message(s): ");
 	while (fgets(buffer, BUF_SIZE, stdin) != NULL) 
 	{
-		ret = sendto(sockfd, buffer, BUF_SIZE, 0, (struct sockaddr *) &addr, sizeof(addr));  
+		ret = sendto(sockfd, buffer, BUF_SIZE, 0, (struct sockaddr *) &addr, sizeof(addr));  //Sending message  
 		if (ret < 0) 
 		{  
 			printf("Error sending data!\n\t-%s", buffer);  
 		}
-		ret = recvfrom(sockfd, buffer, BUF_SIZE, 0, NULL, NULL);  
+		ret = recvfrom(sockfd, buffer, BUF_SIZE, 0, NULL, NULL);  //Receiving message
 		if (ret < 0) 
 		{  
 			printf("Error receiving data!\n");    
