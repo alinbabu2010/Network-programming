@@ -1,76 +1,40 @@
-#include <arpa/inet.h>  
-#include <netinet/in.h>  
-#include <stdio.h>  
-#include <sys/types.h>  
-#include <sys/socket.h>  
-#include <unistd.h>  
-#include <stdlib.h>  
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <netdb.h>
+#include <stdio.h>
 #include <string.h>
-#include <sys/wait.h>
-#include <signal.h>
- 
-#define BUFLEN 512    
- 
- 
-int main(int argc, char *argv[])  
- {  
-      struct sockaddr_in serv_addr;  
-      int sockfd;
-      socklen_t slen;
-      slen=sizeof(serv_addr);  
-      char buf[BUFLEN]; 
- 
- if(argc != 3)  
-   {  
-       printf("Usage : %s <Server-IP>\n",argv[2]);  
-       exit(0);  
-   } 
- 
- 
- 
- if ((sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP))==-1)  
-   {
-       perror("Socket Error");
-       exit(1);
-   }
- uint16_t port = atoi( argv[ 1 ] ); 
- 
- bzero(&serv_addr, sizeof(serv_addr));  
- serv_addr.sin_family = AF_INET;  
- serv_addr.sin_port = htons(port);  
- serv_addr.sin_addr.s_addr = inet_addr(argv[2]);
- 
- 
- while(1)
-   {
-     bzero(buf,BUFLEN);
-     printf("Attempting to READ to socket %d: ",sockfd);
-     fflush(stdout);
- 
-     if(recvfrom(sockfd, buf, BUFLEN, 0, (struct sockaddr*)&serv_addr, &slen)==-1)  
-        {
-            perror("Blad bind");
-            exit(1); 
-        }
-      printf("The message from the server is: %s \n",buf);
-      printf("Please enter the message to send: ");
-      bzero(buf,BUFLEN);
-      fgets(buf,BUFLEN,stdin);
-      printf("Attempting to write to socket %d: ",sockfd);
-      fflush(stdout);
-      
-      if (sendto(sockfd, buf, BUFLEN, 0, (struct sockaddr*)&serv_addr, slen)==-1)
-           {
-               perror("Blad bind");
-               exit(1); 
-           }
- 
-   }
- 
- 
- close(sockfd);  
- return 0;
- 
- 
- 
+#include <stdlib.h>
+#include <unistd.h>
+#include <errno.h>
+int main()
+{
+    int listenfd,port,r;
+    char buff[1024],ip[20];
+    struct sockaddr_in servaddr,cliaddr;
+    socklen_t servlen;
+    struct hostent *host;
+    struct sockaddr_in serverAdd;
+    printf("Enter the server ip address\n");
+    scanf("%s",ip); 
+    host = gethostbyname(ip);
+    listenfd = socket(AF_INET,SOCK_DGRAM,0);
+    if(listenfd==-1)
+    {
+        perror("Socket");
+        return 0;
+    }
+    printf("Enter the port no: ");
+    scanf("%d",&port);
+    printf("The port no is %d",port);
+    servaddr.sin_family = AF_INET;
+    servaddr.sin_port = htons(port);
+    servaddr.sin_addr = *((struct in_addr *)host->h_addr);
+    sendto(listenfd,buff,sizeof(buff),0,(struct sockaddr*)&servaddr,sizeof(servaddr));
+    r=recvfrom(listenfd,buff,sizeof(buff),0,(struct sockaddr*)&servaddr,&servlen);
+    buff[r]=0;
+    printf("\nThe time received from the server : %s\n",buff);
+    exit(0);
+    return 0;
 }
+
